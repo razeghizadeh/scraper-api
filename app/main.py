@@ -12,13 +12,9 @@ app.add_middleware(
 )
 
 @app.get("/scrape")
-async def scrape(url: str):
+async def scrape(url: str, params: dict = None):
     try:
-        html_content = scrape_website(url)
-        return {
-            "status": "success",
-            "url": url,
-            "html": html_content
-        }
+        result = scrape_website(url, params or {})
+        return {"status": "success", "data": result}
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
