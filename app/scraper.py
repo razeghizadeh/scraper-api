@@ -1,31 +1,21 @@
-from requests_html import HTMLSession
-import time
+import requests
+from lxml import html
+from lxml_html_clean import Cleaner
 
 def scrape_website(url):
-    session = HTMLSession()
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+    }
     
     try:
-        # تنظیمات مرورگر headless
-        browser_args = [
-            '--no-sandbox',
-            '--disable-setuid-sandbox',
-            '--disable-dev-shm-usage',
-            '--disable-accelerated-2d-canvas',
-            '--disable-gpu'
-        ]
+        response = requests.get(url, headers=headers, timeout=20)
+        response.raise_for_status()
         
-        # ایجاد session با قابلیت رندرینگ جاوااسکریپت
-        response = session.get(url, headers={
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
-        })
+        # تمیز کردن HTML (اختیاری)
+        cleaner = Cleaner()
+        cleaned_html = cleaner.clean_html(response.text)
         
-        # اجرای جاوااسکریپت و صبر برای لود کامل صفحه
-        response.html.render(timeout=20, sleep=5)
-        
-        # دریافت HTML پس از رندرینگ کامل
-        return response.html.html
+        return cleaned_html
         
     except Exception as e:
         raise Exception(f"Error scraping website: {str(e)}")
-    finally:
-        session.close()
