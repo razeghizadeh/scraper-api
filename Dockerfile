@@ -6,7 +6,9 @@ COPY requirements.txt .
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends gcc python3-dev && \
+    apt-get install -y chromium && \
     pip install --user -r requirements.txt
+    
 
 # مرحله نهایی
 FROM python:3.9-slim
