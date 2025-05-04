@@ -1,21 +1,16 @@
 import requests
-from lxml import html
-from lxml_html_clean import Cleaner
 
-def scrape_website(url):
+def scrape_website(url, params):
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
     }
     
-    try:
-        response = requests.get(url, headers=headers, timeout=20)
-        response.raise_for_status()
-        
-        # تمیز کردن HTML (اختیاری)
-        cleaner = Cleaner()
-        cleaned_html = cleaner.clean_html(response.text)
-        
-        return cleaned_html
-        
-    except Exception as e:
-        raise Exception(f"Error scraping website: {str(e)}")
+    response = requests.get(url, headers=headers, params=params)
+    response.raise_for_status()
+    
+    # بازگرداندن محتوای خام HTML بدون هیچ پردازشی
+    return {
+        "html": response.text,
+        "status_code": response.status_code,
+        "headers": dict(response.headers)
+    }
