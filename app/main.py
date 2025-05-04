@@ -1,34 +1,24 @@
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from .scraper import scrape_raw_html
+from .scraper import scrape_website
 
-app = FastAPI(title="Raw HTML Scraper API", version="1.0")
+app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    allow_methods=["GET"],
+    allow_methods=["*"],
     allow_headers=["*"],
 )
 
-@app.get("/", include_in_schema=False)
-async def root():
-    return {"message": "Raw HTML Scraper API is running!"}
-
-@app.get("/api/scrape")
-async def scrape_raw(
-    url: str = Query(..., description="URL to scrape"),
-    user_agent: str = Query(None, description="Custom User-Agent header")
-):
+@app.get("/scrape")
+async def scrape(url: str):
     try:
-        html_content = scrape_raw_html(url, user_agent)
+        html_content = scrape_website(url)
         return {
             "status": "success",
             "url": url,
             "html": html_content
         }
     except Exception as e:
-        raise HTTPException(
-            status_code=400,
-            detail=str(e)
-        )
+        raise HTTPException(status_code=400, detail=str(e))
